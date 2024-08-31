@@ -18,7 +18,6 @@ if uploaded_file is not None:
         f.write(uploaded_file.read())
     
     st.sidebar.success("檔案上傳成功")
-    st.write(f"文件保存路径: {file_path}")
 
 
 
