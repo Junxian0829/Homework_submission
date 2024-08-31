@@ -1,6 +1,10 @@
 import os
 import streamlit as st
 
+UPLOAD_FOLDER = 'uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
 st.sidebar.title("作業提交網站")
 
 st.sidebar.subheader("上傳檔案")
