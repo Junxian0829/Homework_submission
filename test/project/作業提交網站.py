@@ -1,8 +1,6 @@
 import streamlit as st
 import requests
 
-FLASK_URL = 'http://127.0.0.1:5000'
-
 st.sidebar.title("作業提交網站")
 
 st.sidebar.subheader("上傳檔案")
