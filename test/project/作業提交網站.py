@@ -1,5 +1,4 @@
 import streamlit as st
-import requests
 
 st.sidebar.title("作業提交網站")
 
