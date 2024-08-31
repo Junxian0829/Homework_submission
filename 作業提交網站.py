@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-FLASK_URL = ''
+FLASK_URL = 'https://homework-suny.onrender.com'
 
 st.sidebar.title("作業提交網站")
 
