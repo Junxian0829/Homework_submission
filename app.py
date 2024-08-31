@@ -8,7 +8,7 @@ from googleapiclient.http import MediaIoBaseUpload
 app = Flask(__name__)
 
 SCOPES = ['https://www.googleapis.com/auth/drive.file']
-SERVICE_ACCOUNT_FILE = 'path/to/your/credentials.json'
+SERVICE_ACCOUNT_FILE = 'credential.json'
 
 def get_drive_service():
     creds = service_account.Credentials.from_service_account_file(
