@@ -25,13 +25,19 @@ def upload_file():
     file = request.files['file']
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
+     print(f"Uploading file: {file.filename}, Type: {file.content_type}")
 
-    service = get_drive_service()
-    file_metadata = {'name': file.filename}
-    media = MediaIoBaseUpload(io.BytesIO(file.read()), mimetype=file.content_type)
-    drive_file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-
-    return jsonify({"status": "File uploaded successfully!", "file_id": drive_file.get('id')}), 200
+    try:
+        service = get_drive_service()
+        file_metadata = {'name': file.filename}
+        media = MediaIoBaseUpload(io.BytesIO(file.read()), mimetype=file.content_type)
+        drive_file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+        print(f"File uploaded successfully, ID: {drive_file.get('id')}")
+        return jsonify({"status": "File uploaded successfully!", "file_id": drive_file.get('id')}), 200
+        
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True, threaded=True)
