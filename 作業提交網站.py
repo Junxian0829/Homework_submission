@@ -29,9 +29,10 @@ if uploaded_file is not None:
     else:
         st.warning("請上傳 Python 檔案（.py）以查看預覽")
 
-    status_text = st.sidebar.text("正在上傳檔案...")
-
     if st.sidebar.button("提交檔案"):
+        
+        status_text = st.sidebar.text("正在上傳檔案...")
+        
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future = executor.submit(upload_to_flask, uploaded_file)
             success = future.result()
