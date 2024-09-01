@@ -16,6 +16,8 @@ def upload_file_to_drive(file_content, filename, content_type):
         SERVICE_ACCOUNT_FILE, scopes=SCOPES)
     service = build('drive', 'v3', credentials=creds)
 
+    print(f"Uploading file: {filename}, size: {len(file_content)} bytes, content type: {content_type}")
+
     file_metadata = {'name': filename, 'parents': [UPLOAD_FOLDER]}
     media = MediaIoBaseUpload(io.BytesIO(file_content), mimetype=content_type)
 
@@ -34,6 +36,9 @@ def upload_file():
     file_content = file.read()
     filename = file.filename
     content_type = file.content_type
+
+    with open(f"local_{filename}", 'wb') as local_file:
+        local_file.write(file_content)
 
     def async_upload():
         file_id = upload_file_to_drive(file_content, filename, content_type)
