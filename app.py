@@ -16,8 +16,6 @@ def upload_file_to_drive(file_content, filename, content_type):
         SERVICE_ACCOUNT_FILE, scopes=SCOPES)
     service = build('drive', 'v3', credentials=creds)
 
-    print(f"Uploading file: {filename}, size: {len(file_content)} bytes, content type: {content_type}")
-
     file_metadata = {'name': filename, 'parents': [UPLOAD_FOLDER]}
     media = MediaIoBaseUpload(io.BytesIO(file_content), mimetype=content_type)
 
@@ -34,15 +32,19 @@ def upload_file():
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
-    file_content = file.read()
+    file_content = file.read()  # 确保文件内容完整读取
     filename = file.filename
     content_type = file.content_type
 
-    def async_upload():
-        file_id = upload_file_to_drive(file_content, filename, content_type)
+    # 打印内容长度进行调试
+    print(f"Uploading file: {filename}, size: {len(file_content)} bytes, content type: {content_type}")
+
+    def async_upload(content, fname, ctype):
+        file_id = upload_file_to_drive(content, fname, ctype)
         print(f"File uploaded with ID: {file_id}")
 
-    thread = threading.Thread(target=async_upload)
+    # 将文件内容传递给线程
+    thread = threading.Thread(target=async_upload, args=(file_content, filename, content_type))
     thread.start()
 
     return jsonify({"status": "File upload started"}), 200
