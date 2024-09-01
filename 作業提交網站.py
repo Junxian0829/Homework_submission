@@ -34,6 +34,8 @@ if uploaded_file is not None:
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future = executor.submit(upload_to_flask, uploaded_file)
         success = future.result()
+
+        status_text.empty()
         
         if success:
             st.sidebar.success("檔案上傳成功")
