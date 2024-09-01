@@ -20,14 +20,16 @@ if uploaded_file is not None:
     file_name = uploaded_file.name
     file_type = uploaded_file.type
 
-    if file_name.endswith('.py'):
+    # 读取文件内容并保留以供上传
+    file_content = uploaded_file.read()
 
-        file_content = uploaded_file.read()
+    if file_name.endswith('.py'):
         st.write("**檔案內容預覽：**")
         st.code(file_content.decode('utf-8'), language='python')
-    
+    elif file_type.startswith('image/'):
+        st.image(file_content, caption=file_name, use_column_width=True)
     else:
-        st.warning("請上傳 Python 檔案（.py）以查看預覽")
+        st.warning("檔案類型不支援預覽")
 
     if st.sidebar.button("提交檔案"):
         
