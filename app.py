@@ -19,7 +19,6 @@ def upload_file_to_drive(file_content, filename, content_type):
     file_metadata = {'name': filename, 'parents': [UPLOAD_FOLDER]}
     media = MediaIoBaseUpload(io.BytesIO(file_content), mimetype=content_type)
 
-    # 执行同步文件上传
     drive_file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
     return drive_file.get('id')
 
