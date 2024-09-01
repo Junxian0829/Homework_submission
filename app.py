@@ -28,7 +28,7 @@ def upload_file():
 
     service = get_drive_service()
     file_metadata = {
-        'name': file.filename
+        'name': file.filename,
         'parents': [UPLOAD_FOLDER]
     }
     media = MediaIoBaseUpload(io.BytesIO(file.read()), mimetype=file.content_type)
