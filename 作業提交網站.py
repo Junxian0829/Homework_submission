@@ -1,40 +1,45 @@
-import os
-import io
-from flask import Flask, request, jsonify
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseUpload
+import streamlit as st
+import requests
+import concurrent.futures
 
-app = Flask(__name__)
+FLASK_URL = 'https://homework-suny.onrender.com'
 
-UPLOAD_FOLDER = '1TD0x7j_7yYpf4NqhFaUGxsdSz0ZkzKzF'
-SCOPES = ['https://www.googleapis.com/auth/drive']
-SERVICE_ACCOUNT_FILE = '/etc/secrets/credentials.json'
+st.sidebar.title("作業提交網站")
 
-def get_drive_service():
-    creds = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-    service = build('drive', 'v3', credentials=creds)
-    return service
+st.sidebar.subheader("上傳檔案")
 
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part"}), 400
+uploaded_file = st.sidebar.file_uploader("選擇欲上傳的檔案")
 
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
+def upload_to_flask(file):
+    files = {'file': (file.name, file, file.type)}
+    response = requests.post(f"{FLASK_URL}/upload", files=files)
+    return response.status_code == 200
 
-    service = get_drive_service()
-    file_metadata = {
-        'name': file.filename,
-        'parents': [UPLOAD_FOLDER]
-    }
-    media = MediaIoBaseUpload(io.BytesIO(file.read()), mimetype=file.content_type)
-    drive_file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+if uploaded_file is not None:
+     
+    file_name = uploaded_file.name
+    file_type = uploaded_file.type
 
-    return jsonify({"status": "File uploaded successfully!", "file_id": drive_file.get('id')}), 200
+    if file_name.endswith('.py'):
 
-if __name__ == '__main__':
-    app.run(port=5000, debug=True, threaded=True)
+        file_content = uploaded_file.read().decode('utf-8')
+        st.write("**檔案內容預覽：**")
+        st.code(file_content, language='python')
+    
+    else:
+        st.warning("請上傳 Python 檔案（.py）以查看預覽")
+
+    if st.sidebar.button("提交檔案"):
+        
+        status_text = st.sidebar.text("正在上傳檔案...")
+        
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(upload_to_flask, uploaded_file)
+            success = future.result()
+
+            status_text.empty()
+        
+            if success:
+                st.sidebar.success("檔案上傳成功")
+            else:
+                st.sidebar.error("檔案上傳失敗")
