@@ -19,8 +19,6 @@ if uploaded_file is not None:
      
     file_name = uploaded_file.name
     file_type = uploaded_file.type
-
-    # 读取文件内容并保留以供上传
     file_content = uploaded_file.read()
 
     if file_name.endswith('.py'):
