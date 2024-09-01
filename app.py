@@ -42,7 +42,7 @@ def upload_file():
     thread = threading.Thread(target=async_upload)
     thread.start()
 
-    return jsonify({"status": "File upload started"}), 202
+    return jsonify({"status": "File upload started"}), 200
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True, threaded=True)
