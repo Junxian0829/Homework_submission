@@ -32,14 +32,11 @@ if uploaded_file is not None:
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future = executor.submit(upload_to_flask, uploaded_file)
         st.sidebar.text("正在上傳檔案...")
-    
-    files = {'file': (uploaded_file.name, uploaded_file, uploaded_file.type)}
-    response = requests.post(f"{FLASK_URL}/upload", files=files)
-    
-    if response.status_code == 200:
-        st.sidebar.success("檔案上傳成功")
-    else:
-        st.sidebar.error("檔案上傳失敗")
+       
+        if response.status_code == 200:
+            st.sidebar.success("檔案上傳成功")
+        else:
+            st.sidebar.error("檔案上傳失敗")
 
     
 
