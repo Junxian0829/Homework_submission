@@ -27,7 +27,10 @@ def upload_file():
         return jsonify({"error": "No selected file"}), 400
 
     service = get_drive_service()
-    file_metadata = {'name': file.filename}
+    file_metadata = {
+        'name': file.filename
+        'parents': [UPLOAD_FOLDER]
+    }
     media = MediaIoBaseUpload(io.BytesIO(file.read()), mimetype=file.content_type)
     drive_file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
 
