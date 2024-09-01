@@ -10,8 +10,8 @@ st.sidebar.subheader("上傳檔案")
 
 uploaded_file = st.sidebar.file_uploader("選擇欲上傳的檔案")
 
-def upload_to_flask(file):
-    files = {'file': (file.name, file, file.type)}
+def upload_to_flask(file_name, file_content, file_type):
+    files = {'file': (file_name, file_content, file_type)}
     response = requests.post(f"{FLASK_URL}/upload", files=files)
     return response.status_code == 200
 
@@ -22,9 +22,9 @@ if uploaded_file is not None:
 
     if file_name.endswith('.py'):
 
-        file_content = uploaded_file.read().decode('utf-8')
+        file_content = uploaded_file.read()
         st.write("**檔案內容預覽：**")
-        st.code(file_content, language='python')
+        st.code(file_content.decode('utf-8'), language='python')
     
     else:
         st.warning("請上傳 Python 檔案（.py）以查看預覽")
@@ -34,7 +34,7 @@ if uploaded_file is not None:
         status_text = st.sidebar.text("正在上傳檔案...")
         
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            future = executor.submit(upload_to_flask, uploaded_file)
+            future = executor.submit(upload_to_flask, file_name, file_content, file_type)
             success = future.result()
 
             status_text.empty()
