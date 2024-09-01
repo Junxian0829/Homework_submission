@@ -34,24 +34,28 @@ def upload_file():
     filename = file.filename
     content_type = file.content_type
 
-    temp_local_path = os.path.join("/tmp", f"{threading.get_ident()}_{filename}")
+    temp_local_path = os.path.join("/tmp", filename)
 
-    file.save(temp_local_path)
+    # 保存文件前打印文件内容或大小
+    file_content = file.read()
+    print(f"Received file: {filename}, size: {len(file_content)} bytes")
+    
+    # 保存文件
+    with open(temp_local_path, 'wb') as f:
+        f.write(file_content)
 
-    file_size = os.path.getsize(temp_local_path)
-    print(f"Uploading file: {filename}, size: {file_size} bytes, content type: {content_type}")
+    # 确认文件已正确保存
+    saved_size = os.path.getsize(temp_local_path)
+    print(f"File saved: {temp_local_path}, size: {saved_size} bytes")
 
-    def async_upload(local_path, fname, ctype):
-        try:
-            file_id = upload_file_to_drive(local_path, fname, ctype)
-            print(f"File uploaded with ID: {file_id}")
-        finally:
-            os.remove(local_path)
+    # 上传到 Google Drive
+    file_id = upload_file_to_drive(temp_local_path, filename, content_type)
+    print(f"File uploaded with ID: {file_id}")
 
-    thread = threading.Thread(target=async_upload, args=(temp_local_path, filename, content_type))
-    thread.start()
+    # 删除本地临时文件
+    os.remove(temp_local_path)
 
-    return jsonify({"status": "File upload started"}), 200
+    return jsonify({"status": "File uploaded successfully", "file_id": file_id}), 200
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True, threaded=True)
