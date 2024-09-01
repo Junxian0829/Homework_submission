@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseUpload
+from googleapiclient.http import MediaFileUpload
 import io
 import threading
 
@@ -19,9 +19,17 @@ def upload_file_to_drive(file_content, filename, content_type):
     print(f"Uploading file: {filename}, size: {len(file_content)} bytes, content type: {content_type}")
 
     file_metadata = {'name': filename, 'parents': [UPLOAD_FOLDER]}
-    media = MediaIoBaseUpload(io.BytesIO(file_content), mimetype=content_type)
+
+    temp_file = f"/tmp/{filename}"
+    with open(temp_file, 'wb') as f:
+        f.write(file_content)
+
+    media = MediaFileUpload(temp_file, mimetype=content_type)
 
     drive_file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+
+    os.remove(temp_file)
+   
     return drive_file.get('id')
 
 @app.route('/upload', methods=['POST'])
